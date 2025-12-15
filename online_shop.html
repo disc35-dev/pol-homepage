@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Shop | pol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="main.js" defer></script>
+</head>
+
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <h1 class="logo"><img src="images/pol.jpg" alt="pol"><span class="logo-text">pol cake&bread</span></h1>
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html#hero">ホーム</a></li>
+                    <li><a href="index.html#news">お知らせ</a></li>
+                    <li><a href="index.html#about">こだわり</a></li>
+                    <li><a href="index.html#menu">商品紹介</a></li>
+                    <li><a href="online_shop.html" class="active">オンラインショップ</a></li>
+                    <li><a href="index.html#contact">アクセス</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="section">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-subtitle">Online Shop</span>
+                    <h3 class="section-title">オンラインショップ</h3>
+                </div>
+                <!-- Gallery Grid -->
+                <div class="gallery-grid">
+                    <div class="gallery-item">
+                        <img src="images/pound_cake.png" alt="焼き菓子">
+                        <div class="gallery-info">
+                            <h4>焼き菓子</h4>
+                            <p>芳醇なバターと厳選素材のハーモニー</p>
+                            <p class="price">¥350</p>
+                            <button class="btn btn-shop" data-product="焼き菓子">カートに入れる</button>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="images/whole_cake.png" alt="ケーキ">
+                        <div class="gallery-info">
+                            <h4>ケーキ</h4>
+                            <p>特別な日を彩る、華やかなデコレーション</p>
+                            <p class="price">¥350</p>
+                            <button class="btn btn-shop" data-product="ケーキ">カートに入れる</button>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="images/yeast_bread.png" alt="酵母パン">
+                        <div class="gallery-info">
+                            <h4>酵母パン</h4>
+                            <p>自然の力で膨らませた、風味豊かな味わい</p>
+                            <p class="price">¥350</p>
+                            <button class="btn btn-shop" data-product="酵母パン">カートに入れる</button>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="images/crepe.png" alt="クレープ">
+                        <div class="gallery-info">
+                            <h4>クレープ</h4>
+                            <p>もちもち生地とフレッシュフルーツの出会い</p>
+                            <p class="price">¥400</p>
+                            <button class="btn btn-shop" data-product="クレープ">カートに入れる</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 pol. All Rights Reserved.</p>
+        </div>
+    </footer>
+</body>
+
+</html>
