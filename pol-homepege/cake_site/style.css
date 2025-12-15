@@ -84,11 +84,19 @@ h4 {
 
 .logo-text {
     margin-left: 12px;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     color: var(--color-primary);
-    font-weight: 700;
-    font-family: var(--font-serif);
+    font-weight: 500;
+    font-family: 'Kiwi Maru', serif;
     line-height: 1.2;
+}
+
+.text-sand {
+    color: #D2B48C;
+}
+
+.text-raspberry {
+    color: #C41E3A;
 }
 
 .nav ul {
