@@ -23,7 +23,7 @@ def remove_white_background_pil(img, threshold=230):
 def create_styled_crepe():
     # Paths
     cake_path = "images/crepe2.png"
-    bg_source_path = "images/pol.jpg"
+    bg_source_path = "images/pol cake.jpg"
     output_path = "images/crepe_refined.png"
     
     # Target size

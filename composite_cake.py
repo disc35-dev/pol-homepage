@@ -25,7 +25,7 @@ def create_styled_image():
     # Paths
     # Use relative path now that we copied the file
     cake_path = "images/unnamed.jpg"
-    bg_source_path = "images/pol.jpg"
+    bg_source_path = "images/pol cake.jpg"
     output_path = "images/pound_cake_final.png"
     
     # Target size
