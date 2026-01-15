@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お知らせ管理 | pol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="icon" href="images/pol_logo.JPG" type="image/png">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-container {
+            max-width: 900px;
+            margin: 120px auto 50px;
+            padding: 40px;
+            background: var(--color-white);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .admin-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--color-secondary);
+        }
+
+        .admin-header h1 {
+            color: var(--color-primary);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .admin-header p {
+            color: var(--color-text);
+            opacity: 0.7;
+        }
+
+        .add-news-section {
+            background: linear-gradient(135deg, rgba(232, 220, 196, 0.3) 0%, rgba(212, 165, 154, 0.2) 100%);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+
+        .add-news-section h2 {
+            color: var(--color-primary);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+
+        .news-input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .news-input-group input {
+            flex: 1;
+        }
+
+        .news-list-section h2 {
+            color: var(--color-primary);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+
+        .admin-news-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border: 1px solid #E8DCC4;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: var(--transition-base);
+        }
+
+        .admin-news-item:hover {
+            background: rgba(232, 220, 196, 0.2);
+        }
+
+        .admin-news-info {
+            flex: 1;
+        }
+
+        .admin-news-date {
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-right: 15px;
+        }
+
+        .admin-news-content {
+            color: var(--color-text);
+        }
+
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-base);
+            display: block;
+            margin: 30px auto 0;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .instruction-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+
+        .instruction-box h3 {
+            color: #856404;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .instruction-box ol {
+            margin-left: 20px;
+            color: #856404;
+        }
+
+        .instruction-box li {
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--color-primary);
+            text-decoration: underline;
+        }
+
+        .back-link:hover {
+            color: var(--color-text);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>📢 お知らせ管理</h1>
+            <p>お知らせの追加・削除を行えます</p>
+        </div>
+
+        <div class="add-news-section">
+            <h2>新しいお知らせを追加</h2>
+            <div class="news-input-group">
+                <input type="date" id="news-date" class="form-input">
+                <input type="text" id="news-content" class="form-input" placeholder="お知らせの内容を入力">
+            </div>
+            <button onclick="addNewsItem()" class="btn btn-primary">追加</button>
+        </div>
+
+        <div class="news-list-section">
+            <h2>現在のお知らせ一覧</h2>
+            <div id="admin-news-list">
+                <p style="text-align: center; color: #999;">読み込み中...</p>
+            </div>
+        </div>
+
+        <button onclick="downloadNewsJSON()" class="btn-download">📥 news.jsonをダウンロード</button>
+
+        <div class="instruction-box">
+            <h3>💡 使い方</h3>
+            <ol>
+                <li>上のフォームから新しいお知らせを追加できます</li>
+                <li>不要なお知らせは「削除」ボタンで削除できます</li>
+                <li>変更が完了したら「news.jsonをダウンロード」ボタンをクリック</li>
+                <li>ダウンロードしたファイルを元の<code>news.json</code>と置き換えてください</li>
+                <li>ページをリロードすると、変更が反映されます</li>
+            </ol>
+        </div>
+
+        <a href="index.html" class="back-link">← ホームページに戻る</a>
+    </div>
+
+    <script>
+        let newsData = [];
+
+        // ページ読み込み時にお知らせデータを取得
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadNewsData();
+
+            // 今日の日付をデフォルトで設定
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('news-date').value = today;
+        });
+
+        // お知らせデータを読み込む
+        async function loadNewsData() {
+            try {
+                // キャッシュバスティング: タイムスタンプを追加して常に最新データを取得
+                const timestamp = new Date().getTime();
+                const response = await fetch(`news.json?t=${timestamp}`, {
+                    cache: 'no-store'  // キャッシュを使用しない
+                });
+                newsData = await response.json();
+                renderNewsList();
+            } catch (error) {
+                console.error('お知らせの読み込みエラー:', error);
+                document.getElementById('admin-news-list').innerHTML =
+                    '<p style="text-align: center; color: #e74c3c;">お知らせの読み込みに失敗しました</p>';
+            }
+        }
+
+        // お知らせ一覧を表示
+        function renderNewsList() {
+            const listElement = document.getElementById('admin-news-list');
+
+            if (newsData.length === 0) {
+                listElement.innerHTML = '<p style="text-align: center; color: #999;">お知らせがありません</p>';
+                return;
+            }
+
+            listElement.innerHTML = newsData.map((news, index) => `
+                <div class="admin-news-item">
+                    <div class="admin-news-info">
+                        <span class="admin-news-date">${news.date}</span>
+                        <span class="admin-news-content">${news.content}</span>
+                    </div>
+                    <button class="btn-delete" onclick="deleteNewsItem(${index})">削除</button>
+                </div>
+            `).join('');
+        }
+
+        // お知らせを追加
+        function addNewsItem() {
+            const dateInput = document.getElementById('news-date');
+            const contentInput = document.getElementById('news-content');
+
+            const date = dateInput.value;
+            const content = contentInput.value.trim();
+
+            if (!date || !content) {
+                alert('日付と内容を入力してください');
+                return;
+            }
+
+            // 日付をYYYY.MM.DD形式に変換
+            const formattedDate = date.replace(/-/g, '.');
+
+            // 新しいお知らせを配列の先頭に追加
+            newsData.unshift({
+                date: formattedDate,
+                content: content
+            });
+
+            // 表示を更新
+            renderNewsList();
+
+            // フォームをクリア
+            contentInput.value = '';
+
+            // 今日の日付を再設定
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+
+            alert('お知らせを追加しました。\n「news.jsonをダウンロード」ボタンをクリックして、ファイルを保存してください。');
+        }
+
+        // お知らせを削除
+        function deleteNewsItem(index) {
+            if (!confirm('このお知らせを削除しますか?')) {
+                return;
+            }
+
+            newsData.splice(index, 1);
+            renderNewsList();
+
+            alert('お知らせを削除しました。\n「news.jsonをダウンロード」ボタンをクリックして、ファイルを保存してください。');
+        }
+
+        // news.jsonをダウンロード
+        function downloadNewsJSON() {
+            const jsonStr = JSON.stringify(newsData, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'news.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert('news.jsonをダウンロードしました。\nこのファイルを元のnews.jsonと置き換えてください。');
+        }
+    </script>
+</body>
+
+</html>

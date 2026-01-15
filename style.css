@@ -452,6 +452,76 @@ h4 {
     }
 }
 
+/* Instagram Grid */
+.instagram-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.instagram-item {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    /* 1:1 aspect ratio */
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: var(--color-white);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.instagram-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.instagram-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.instagram-item:hover img {
+    transform: scale(1.1);
+}
+
+.instagram-placeholder {
+    background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-accent) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.instagram-placeholder-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: var(--color-text);
+    opacity: 0.7;
+}
+
+.instagram-link {
+    text-align: center;
+    margin-top: 40px;
+}
+
+@media (max-width: 768px) {
+    .instagram-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .hero-title {
@@ -491,5 +561,221 @@ h4 {
 
     .nav a {
         font-size: 1.2rem;
+    }
+}
+
+/* Reservation Form Styles */
+.reservation-section {
+    min-height: calc(100vh - 200px);
+    padding-top: 120px;
+}
+
+.section-description {
+    text-align: center;
+    color: var(--color-text);
+    opacity: 0.8;
+    margin-top: 15px;
+    font-size: 0.95rem;
+}
+
+.reservation-form-container {
+    max-width: 700px;
+    margin: 0 auto;
+    background: var(--color-white);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.reservation-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--color-text);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.required {
+    color: #C41E3A;
+    font-weight: 700;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    padding: 12px 16px;
+    border: 2px solid #E8DCC4;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: var(--font-sans);
+    color: var(--color-text);
+    background-color: var(--color-white);
+    transition: var(--transition-base);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(142, 110, 83, 0.1);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: #999;
+    opacity: 0.7;
+}
+
+.form-select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238E6E53' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-notice {
+    background: linear-gradient(135deg, rgba(232, 220, 196, 0.3) 0%, rgba(212, 165, 154, 0.2) 100%);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid var(--color-primary);
+}
+
+.form-notice p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    color: var(--color-text);
+    opacity: 0.9;
+}
+
+.form-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-submit {
+    padding: 15px 50px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition-base);
+}
+
+.btn-submit:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(142, 110, 83, 0.3);
+}
+
+.btn-submit:active {
+    transform: translateY(-1px);
+}
+
+.btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.success-message {
+    text-align: center;
+    padding: 60px 40px;
+    animation: fadeInScale 0.5s ease-out;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 25px;
+    font-size: 3rem;
+    color: white;
+    box-shadow: 0 5px 20px rgba(76, 175, 80, 0.3);
+}
+
+.success-message h4 {
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    margin-bottom: 15px;
+}
+
+.success-message p {
+    color: var(--color-text);
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+.btn-secondary {
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+    padding: 12px 35px;
+    border: 2px solid var(--color-primary);
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive for Reservation Form */
+@media (max-width: 768px) {
+    .reservation-form-container {
+        padding: 30px 20px;
+    }
+
+    .reservation-section {
+        padding-top: 100px;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 15px 30px;
+    }
+
+    .success-message {
+        padding: 40px 20px;
+    }
+
+    .success-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
     }
 }

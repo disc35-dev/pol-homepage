@@ -13,6 +13,8 @@
     <link rel="icon" href="images/pol_logo.JPG" type="image/png">
     <link rel="stylesheet" href="style.css">
     <script src="main.js" defer></script>
+    <script src="news.js" defer></script>
+    <script src="instagram.js" defer></script>
 </head>
 
 <body>
@@ -27,6 +29,7 @@
                     <li><a href="#about">こだわり</a></li>
                     <li><a href="#menu">商品紹介</a></li>
                     <li><a href="online_shop.html">オンラインショップ</a></li>
+                    <li><a href="reservation.html">お取り置き</a></li>
                     <li><a href="#contact">アクセス</a></li>
                 </ul>
             </nav>
@@ -59,25 +62,10 @@
                     <h3 class="section-title">お知らせ</h3>
                 </div>
                 <div class="news-list">
+                    <!-- お知らせはnews.jsによって動的に読み込まれます -->
                     <dl class="news-item">
-                        <dt>2025.12.15</dt>
-                        <dd>ロゴを変更しました。</dd>
-                    </dl>
-                    <dl class="news-item">
-                        <dt>2024.12.10</dt>
-                        <dd>Instagramの画像表示を削除しました。</dd>
-                    </dl>
-                    <dl class="news-item">
-                        <dt>2024.12.10</dt>
-                        <dd>店舗情報に地図とInstagramを追加しました。</dd>
-                    </dl>
-                    <dl class="news-item">
-                        <dt>2024.12.10</dt>
-                        <dd>クレープの価格を改定しました。</dd>
-                    </dl>
-                    <dl class="news-item">
-                        <dt>2024.12.01</dt>
-                        <dd>ウェブサイトをリニューアルしました。</dd>
+                        <dt>-</dt>
+                        <dd>お知らせを読み込み中...</dd>
                     </dl>
                 </div>
             </div>
@@ -140,6 +128,29 @@
                             <p class="price">¥400</p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="instagram" class="section instagram">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-subtitle">Instagram</span>
+                    <h3 class="section-title">最新の投稿</h3>
+                </div>
+                <div class="instagram-grid" id="instagram-feed">
+                    <!-- Instagram posts will be loaded here -->
+                    <div class="instagram-item instagram-placeholder">
+                        <div class="instagram-placeholder-content">
+                            <p>Instagram投稿を読み込み中...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="instagram-link">
+                    <a href="https://www.instagram.com/ferme_bread" target="_blank" rel="noopener noreferrer"
+                        class="btn btn-primary">
+                        Instagramで見る
+                    </a>
                 </div>
             </div>
         </section>
