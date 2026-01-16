@@ -1,8 +1,34 @@
+window.onerror = function (msg, url, lineNo, columnNo, error) {
+    alert('システムエラーが発生しました: ' + msg);
+    return false;
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reservation-form');
     const successMessage = document.getElementById('success-message');
     const formContainer = document.querySelector('.reservation-form');
     const totalPriceSpan = document.getElementById('total-price');
+
+    // Submitボタンのクリックイベントでバリデーションチェックを明示的に行う
+    // (モバイルでHTML5バリデーションが沈黙する場合の対策)
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.addEventListener('click', (e) => {
+        if (!form.checkValidity()) {
+            const invalidInput = form.querySelector(':invalid');
+            if (invalidInput) {
+                // ラベルを取得してエラーメッセージを作成
+                const label = form.querySelector(`label[for="${invalidInput.id}"]`);
+                let fieldName = "入力項目";
+                if (label) {
+                    fieldName = label.textContent.replace('*', '').trim();
+                } else if (invalidInput.name === 'product') {
+                    fieldName = '商品';
+                }
+                
+                alert(`「${fieldName}」を確認してください。\n必須項目か、入力内容が正しくありません。`);
+            }
+        }
+    });
 
     // 今日の日付を取得して、受取希望日の最小値を設定
     const today = new Date();
