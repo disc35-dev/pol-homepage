@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reservation-form');
     const successMessage = document.getElementById('success-message');
     const formContainer = document.querySelector('.reservation-form');
+    const totalPriceSpan = document.getElementById('total-price');
 
     // 今日の日付を取得して、受取希望日の最小値を設定
     const today = new Date();
@@ -10,17 +11,81 @@ document.addEventListener('DOMContentLoaded', () => {
     const minDate = tomorrow.toISOString().split('T')[0];
     document.getElementById('pickup-date').setAttribute('min', minDate);
 
+    // 商品チェックボックスと数量入力の連動 & 合計金額計算
+    const productCheckboxes = document.querySelectorAll('input[name="product"]');
+
+    productCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            const quantityInput = document.getElementById(this.id.replace('prod-', 'qty-'));
+
+            if (this.checked) {
+                quantityInput.disabled = false;
+            } else {
+                quantityInput.disabled = true;
+                quantityInput.value = 1; // リセット
+            }
+
+            calculateTotal();
+        });
+    });
+
+    // 数量入力変更時の合計金額計算
+    const quantityInputs = document.querySelectorAll('.product-quantity-input input');
+    quantityInputs.forEach(input => {
+        input.addEventListener('input', calculateTotal);
+
+        // 数量の有効範囲チェック
+        input.addEventListener('change', function () {
+            if (this.value < 1) this.value = 1;
+        });
+    });
+
+    // 合計金額を計算する関数
+    function calculateTotal() {
+        let total = 0;
+
+        productCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                const price = parseInt(checkbox.getAttribute('data-price'));
+                const quantityInput = document.getElementById(checkbox.id.replace('prod-', 'qty-'));
+                const quantity = parseInt(quantityInput.value) || 0;
+
+                total += price * quantity;
+            }
+        });
+
+        totalPriceSpan.textContent = total.toLocaleString();
+    }
+
     // フォーム送信処理
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        // 商品が選択されているかチェック
+        const selectedProducts = Array.from(productCheckboxes).filter(cb => cb.checked);
+        if (selectedProducts.length === 0) {
+            alert('商品を少なくとも1つ選択してください。');
+            return;
+        }
+
+        // 商品データの収集
+        const productList = selectedProducts.map(checkbox => {
+            const name = checkbox.value;
+            const price = parseInt(checkbox.getAttribute('data-price'));
+            const quantityInput = document.getElementById(checkbox.id.replace('prod-', 'qty-'));
+            const quantity = parseInt(quantityInput.value);
+            return { name, price, quantity, subtotal: price * quantity };
+        });
+
+        const total = parseInt(totalPriceSpan.textContent.replace(/,/g, ''));
 
         // フォームデータを取得
         const formData = {
             name: document.getElementById('name').value,
             phone: document.getElementById('phone').value,
             email: document.getElementById('email').value,
-            product: document.getElementById('product').value,
-            quantity: document.getElementById('quantity').value,
+            products: productList,
+            totalPrice: total,
             pickupDate: document.getElementById('pickup-date').value,
             pickupTime: document.getElementById('pickup-time').value,
             notes: document.getElementById('notes').value
@@ -41,6 +106,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // フォームをリセット
             form.reset();
+            productCheckboxes.forEach(cb => {
+                const qtyInput = document.getElementById(cb.id.replace('prod-', 'qty-'));
+                qtyInput.disabled = true;
+            });
+            calculateTotal();
+
         } catch (error) {
             console.error('送信エラー:', error);
             alert('送信に失敗しました。もう一度お試しください。\n\nエラー: ' + error.message);
@@ -54,8 +125,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // LINE通知を送信する関数
     async function sendLineNotification(data) {
         // LINE Notify APIのアクセストークン
-        // 注意: 本番環境では、このトークンをサーバーサイドで管理してください
         const LINE_NOTIFY_TOKEN = 'YOUR_LINE_NOTIFY_TOKEN_HERE';
+
+        // 商品リストのテキスト作成
+        const productsText = data.products.map(p =>
+            `  ・${p.name}: ${p.quantity}個 (¥${(p.price * p.quantity).toLocaleString()})`
+        ).join('\n');
 
         // 通知メッセージを作成
         const message = `
@@ -64,8 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
 お名前: ${data.name}
 電話番号: ${data.phone}
 ${data.email ? `メール: ${data.email}` : ''}
-商品: ${data.product}
-数量: ${data.quantity}個
+
+■ご注文内容
+${productsText}
+
+合計金額: ¥${data.totalPrice.toLocaleString()}
+
 受取日時: ${data.pickupDate} ${data.pickupTime}
 ${data.notes ? `備考: ${data.notes}` : ''}
 
@@ -124,14 +203,6 @@ ${data.notes ? `備考: ${data.notes}` : ''}
         e.target.value = value;
     });
 
-    // 数量の検証
-    const quantityInput = document.getElementById('quantity');
-    quantityInput.addEventListener('input', (e) => {
-        const value = parseInt(e.target.value);
-        if (value < 1) {
-            e.target.value = 1;
-        } else if (value > 99) {
-            e.target.value = 99;
-        }
-    });
+    // init
+    calculateTotal();
 });

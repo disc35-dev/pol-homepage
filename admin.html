@@ -208,6 +208,7 @@
     </div>
 
     <script>
+        const STORAGE_KEY = 'pol_news_data';
         let newsData = [];
 
         // ページ読み込み時にお知らせデータを取得
@@ -222,17 +223,41 @@
         // お知らせデータを読み込む
         async function loadNewsData() {
             try {
-                // キャッシュバスティング: タイムスタンプを追加して常に最新データを取得
-                const timestamp = new Date().getTime();
-                const response = await fetch(`news.json?t=${timestamp}`, {
-                    cache: 'no-store'  // キャッシュを使用しない
-                });
-                newsData = await response.json();
+                // まずローカルストレージをチェック
+                const storedData = localStorage.getItem(STORAGE_KEY);
+
+                if (storedData) {
+                    // ローカルストレージにデータがある場合はそれを使用
+                    newsData = JSON.parse(storedData);
+                    console.log('ローカルストレージからお知らせを読み込みました');
+                } else {
+                    // ローカルストレージにデータがない場合はJSONファイルから読み込み
+                    const timestamp = new Date().getTime();
+                    const response = await fetch(`news.json?t=${timestamp}`, {
+                        cache: 'no-store'
+                    });
+                    newsData = await response.json();
+                    // 初回読み込み時はローカルストレージに保存
+                    saveToLocalStorage();
+                    console.log('news.jsonからお知らせを読み込み、ローカルストレージに保存しました');
+                }
+
                 renderNewsList();
             } catch (error) {
                 console.error('お知らせの読み込みエラー:', error);
                 document.getElementById('admin-news-list').innerHTML =
                     '<p style="text-align: center; color: #e74c3c;">お知らせの読み込みに失敗しました</p>';
+            }
+        }
+
+        // ローカルストレージに保存
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(newsData));
+                console.log('ローカルストレージに保存しました');
+            } catch (error) {
+                console.error('ローカルストレージへの保存エラー:', error);
+                alert('データの保存に失敗しました。ブラウザのストレージ容量を確認してください。');
             }
         }
 
@@ -278,6 +303,9 @@
                 content: content
             });
 
+            // ローカルストレージに保存
+            saveToLocalStorage();
+
             // 表示を更新
             renderNewsList();
 
@@ -288,7 +316,7 @@
             const today = new Date().toISOString().split('T')[0];
             dateInput.value = today;
 
-            alert('お知らせを追加しました。\n「news.jsonをダウンロード」ボタンをクリックして、ファイルを保存してください。');
+            alert('お知らせを追加しました！\n変更は自動的に保存されています。');
         }
 
         // お知らせを削除
@@ -298,12 +326,16 @@
             }
 
             newsData.splice(index, 1);
+
+            // ローカルストレージに保存
+            saveToLocalStorage();
+
             renderNewsList();
 
-            alert('お知らせを削除しました。\n「news.jsonをダウンロード」ボタンをクリックして、ファイルを保存してください。');
+            alert('お知らせを削除しました！\n変更は自動的に保存されています。');
         }
 
-        // news.jsonをダウンロード
+        // news.jsonをダウンロード（バックアップ用）
         function downloadNewsJSON() {
             const jsonStr = JSON.stringify(newsData, null, 2);
             const blob = new Blob([jsonStr], { type: 'application/json' });
@@ -317,7 +349,15 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            alert('news.jsonをダウンロードしました。\nこのファイルを元のnews.jsonと置き換えてください。');
+            alert('news.jsonをダウンロードしました。\nバックアップとして保存できます。');
+        }
+
+        // ローカルストレージをリセット（デバッグ用）
+        function resetLocalStorage() {
+            if (confirm('ローカルストレージをリセットして、news.jsonから再読み込みしますか？')) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            }
         }
     </script>
 </body>

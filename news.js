@@ -1,4 +1,6 @@
 // お知らせを動的に読み込んで表示するスクリプト
+const STORAGE_KEY = 'pol_news_data';
+
 document.addEventListener('DOMContentLoaded', async () => {
     const newsListElement = document.querySelector('.news-list');
 
@@ -8,13 +10,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        // JSONファイルからお知らせデータを取得
-        const response = await fetch('news.json');
-        if (!response.ok) {
-            throw new Error('お知らせデータの読み込みに失敗しました');
-        }
+        let newsData = [];
+        
+        // まずローカルストレージをチェック(管理者のプレビュー用)
+        const storedData = localStorage.getItem(STORAGE_KEY);
 
-        const newsData = await response.json();
+        if (storedData) {
+            newsData = JSON.parse(storedData);
+            console.log('ローカルストレージからお知らせを読み込みました(プレビューモード)');
+        } else {
+            // ローカルストレージになければnews.jsonから読み込み(通常ユーザー)
+            const response = await fetch('news.json');
+            if (!response.ok) {
+                throw new Error('お知らせデータの読み込みに失敗しました');
+            }
+            newsData = await response.json();
+            console.log('news.jsonからお知らせを読み込みました');
+        }
 
         // お知らせリストをクリア
         newsListElement.innerHTML = '';
@@ -48,14 +60,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// お知らせを追加するヘルパー関数（グローバルに公開）
+// お知らせを追加するヘルパー関数(管理者用: news.json作成サポート)
 window.addNews = async function (content) {
     try {
-        // 現在のお知らせデータを取得
-        const response = await fetch('news.json');
-        const newsData = await response.json();
+        let newsData;
 
-        // 今日の日付を取得（YYYY.MM.DD形式）
+        // まずローカルストレージをチェック
+        const storedData = localStorage.getItem(STORAGE_KEY);
+
+        if (storedData) {
+            newsData = JSON.parse(storedData);
+        } else {
+            // ローカルストレージにデータがない場合はJSONファイルから読み込み
+            const response = await fetch('news.json');
+            newsData = await response.json();
+        }
+
+        // 今日の日付を取得(YYYY.MM.DD形式)
         const today = new Date();
         const year = today.getFullYear();
         const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -69,29 +90,21 @@ window.addNews = async function (content) {
         };
         newsData.unshift(newNewsItem);
 
-        // JSONデータをコンソールに出力（手動でコピーしてnews.jsonに保存）
+        // ローカルストレージに保存
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newsData));
+        console.log('お知らせをローカルストレージに保存しました');
+
+        // JSONデータをコンソールに出力(バックアップ用)
         console.log('=== 更新されたお知らせデータ ===');
         console.log(JSON.stringify(newsData, null, 2));
         console.log('================================');
-        console.log('上記のJSONデータをコピーして、news.jsonファイルに保存してください。');
 
-        // ブラウザでダウンロード可能にする
-        const blob = new Blob([JSON.stringify(newsData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'news.json';
-        a.textContent = 'news.jsonをダウンロード';
-        a.style.cssText = 'position:fixed;top:10px;right:10px;z-index:10000;background:#4CAF50;color:white;padding:10px 20px;border-radius:5px;text-decoration:none;box-shadow:0 2px 10px rgba(0,0,0,0.2);';
-        document.body.appendChild(a);
+        alert(`お知らせを追加しました:\n${dateStr} - ${content}\n\n変更は自動的に保存されています。\nページをリロードすると反映されます。`);
 
-        // 3秒後に自動削除
-        setTimeout(() => {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }, 10000);
-
-        alert(`お知らせを追加しました:\n${dateStr} - ${content}\n\n右上のリンクから更新されたnews.jsonをダウンロードして、元のファイルと置き換えてください。`);
+        // ページをリロードして変更を反映
+        if (confirm('ページをリロードして変更を反映しますか？')) {
+            location.reload();
+        }
 
         return newNewsItem;
     } catch (error) {
@@ -102,7 +115,8 @@ window.addNews = async function (content) {
 };
 
 // 使用例をコンソールに表示
-console.log('%c📢 お知らせ追加方法', 'font-size: 16px; font-weight: bold; color: #4CAF50;');
-console.log('コンソールで以下のコマンドを実行してください:');
+console.log('%c📢 お知らせ管理', 'font-size: 16px; font-weight: bold; color: #4CAF50;');
+console.log('お知らせはローカルストレージに保存されます。');
+console.log('admin.htmlから管理するか、コンソールで以下のコマンドを実行してください:');
 console.log('%caddNews("お知らせの内容");', 'font-size: 14px; background: #f0f0f0; padding: 5px;');
 console.log('例: addNews("新商品「抹茶ケーキ」を追加しました。");');
