@@ -175,31 +175,51 @@
             <p>お知らせの追加・削除を行えます</p>
         </div>
 
-        <div class="add-news-section">
-            <h2>新しいお知らせを追加</h2>
+        <div class="add-news-section" style="background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);">
+            <h2>🆕 イベント・キャンペーン情報の追加</h2>
             <div class="news-input-group">
-                <input type="date" id="news-date" class="form-input">
-                <input type="text" id="news-content" class="form-input" placeholder="お知らせの内容を入力">
+                <input type="date" id="event-date" class="form-input">
+                <input type="text" id="event-content" class="form-input" placeholder="イベント内容を入力...">
             </div>
-            <button onclick="addNewsItem()" class="btn btn-primary">追加</button>
+            <button onclick="addEventItem()" class="btn btn-primary" style="background-color: #00897b;">追加
+                (イベント)</button>
         </div>
 
         <div class="news-list-section">
-            <h2>現在のお知らせ一覧</h2>
+            <h2>🎉 現在のイベント情報</h2>
+            <div id="admin-event-list"></div>
+        </div>
+
+        <button onclick="downloadJSON(eventData, 'event_news.json')" class="btn-download"
+            style="background: #00897b; margin-bottom: 50px;">📥 event_news.jsonをダウンロード</button>
+
+        <hr style="margin: 40px 0; border: 0; border-top: 2px dashed #ccc;">
+
+        <div class="add-news-section">
+            <h2>📰 更新記録の追加</h2>
+            <div class="news-input-group">
+                <input type="date" id="news-date" class="form-input">
+                <input type="text" id="news-content" class="form-input" placeholder="更新内容を入力...">
+            </div>
+            <button onclick="addNewsItem()" class="btn btn-primary">追加 (更新記録)</button>
+        </div>
+
+        <div class="news-list-section">
+            <h2>📜 現在の更新記録</h2>
             <div id="admin-news-list">
                 <p style="text-align: center; color: #999;">読み込み中...</p>
             </div>
         </div>
 
-        <button onclick="downloadNewsJSON()" class="btn-download">📥 news.jsonをダウンロード</button>
+        <button onclick="downloadJSON(newsData, 'news.json')" class="btn-download">📥 news.jsonをダウンロード</button>
 
         <div class="instruction-box">
             <h3>💡 使い方</h3>
             <ol>
-                <li>上のフォームから新しいお知らせを追加できます</li>
-                <li>不要なお知らせは「削除」ボタンで削除できます</li>
-                <li>変更が完了したら「news.jsonをダウンロード」ボタンをクリック</li>
-                <li>ダウンロードしたファイルを元の<code>news.json</code>と置き換えてください</li>
+                <li>上のフォームから「イベント」または「更新記録」を追加できます</li>
+                <li>それぞれ独立して管理されます</li>
+                <li>変更が完了したら、各セクションの「ダウンロード」ボタンをクリック</li>
+                <li>ダウンロードしたファイルを、それぞれ <code>event_news.json</code> / <code>news.json</code> と置き換えてください</li>
                 <li>ページをリロードすると、変更が反映されます</li>
             </ol>
         </div>
@@ -208,157 +228,107 @@
     </div>
 
     <script>
-        const STORAGE_KEY = 'pol_news_data';
+        const NEWS_Key = 'pol_news_data';
+        const EVENT_Key = 'pol_event_data';
+
         let newsData = [];
+        let eventData = [];
 
-        // ページ読み込み時にお知らせデータを取得
         document.addEventListener('DOMContentLoaded', async () => {
-            await loadNewsData();
-
-            // 今日の日付をデフォルトで設定
+            // 今日の日付セット
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('news-date').value = today;
+            document.getElementById('event-date').value = today;
+
+            // データ読み込み
+            await Promise.all([
+                loadData(NEWS_Key, 'news.json', d => { newsData = d; renderList('admin-news-list', newsData, deleteNewsItem); }),
+                loadData(EVENT_Key, 'event_news.json', d => { eventData = d; renderList('admin-event-list', eventData, deleteEventItem); })
+            ]);
         });
 
-        // お知らせデータを読み込む
-        async function loadNewsData() {
+        async function loadData(storageKey, jsonFile, callback) {
             try {
-                // まずローカルストレージをチェック
-                const storedData = localStorage.getItem(STORAGE_KEY);
-
-                if (storedData) {
-                    // ローカルストレージにデータがある場合はそれを使用
-                    newsData = JSON.parse(storedData);
-                    console.log('ローカルストレージからお知らせを読み込みました');
+                const stored = localStorage.getItem(storageKey);
+                if (stored) {
+                    callback(JSON.parse(stored));
                 } else {
-                    // ローカルストレージにデータがない場合はJSONファイルから読み込み
-                    const timestamp = new Date().getTime();
-                    const response = await fetch(`news.json?t=${timestamp}`, {
-                        cache: 'no-store'
-                    });
-                    newsData = await response.json();
-                    // 初回読み込み時はローカルストレージに保存
-                    saveToLocalStorage();
-                    console.log('news.jsonからお知らせを読み込み、ローカルストレージに保存しました');
+                    const res = await fetch(`${jsonFile}?t=${Date.now()}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        callback(data);
+                        localStorage.setItem(storageKey, JSON.stringify(data));
+                    } else {
+                        callback([]);
+                    }
                 }
-
-                renderNewsList();
-            } catch (error) {
-                console.error('お知らせの読み込みエラー:', error);
-                document.getElementById('admin-news-list').innerHTML =
-                    '<p style="text-align: center; color: #e74c3c;">お知らせの読み込みに失敗しました</p>';
+            } catch (e) {
+                console.error(e);
+                callback([]);
             }
         }
 
-        // ローカルストレージに保存
-        function saveToLocalStorage() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(newsData));
-                console.log('ローカルストレージに保存しました');
-            } catch (error) {
-                console.error('ローカルストレージへの保存エラー:', error);
-                alert('データの保存に失敗しました。ブラウザのストレージ容量を確認してください。');
-            }
-        }
-
-        // お知らせ一覧を表示
-        function renderNewsList() {
-            const listElement = document.getElementById('admin-news-list');
-
-            if (newsData.length === 0) {
-                listElement.innerHTML = '<p style="text-align: center; color: #999;">お知らせがありません</p>';
+        function renderList(elementId, data, deleteFunc) {
+            const el = document.getElementById(elementId);
+            if (data.length === 0) {
+                el.innerHTML = '<p style="text-align: center; color: #999;">データがありません</p>';
                 return;
             }
-
-            listElement.innerHTML = newsData.map((news, index) => `
+            el.innerHTML = data.map((item, i) => `
                 <div class="admin-news-item">
                     <div class="admin-news-info">
-                        <span class="admin-news-date">${news.date}</span>
-                        <span class="admin-news-content">${news.content}</span>
+                        <span class="admin-news-date">${item.date}</span>
+                        <span class="admin-news-content">${item.content}</span>
                     </div>
-                    <button class="btn-delete" onclick="deleteNewsItem(${index})">削除</button>
+                    <button class="btn-delete" onclick="${deleteFunc.name}(${i})">削除</button>
                 </div>
             `).join('');
         }
 
-        // お知らせを追加
-        function addNewsItem() {
-            const dateInput = document.getElementById('news-date');
-            const contentInput = document.getElementById('news-content');
+        // --- News Functions ---
+        window.addNewsItem = () => addItem('news', newsData, NEWS_Key, () => renderList('admin-news-list', newsData, deleteNewsItem));
+        window.deleteNewsItem = (i) => deleteItem(i, newsData, NEWS_Key, () => renderList('admin-news-list', newsData, deleteNewsItem));
 
-            const date = dateInput.value;
+        // --- Event Functions ---
+        window.addEventItem = () => addItem('event', eventData, EVENT_Key, () => renderList('admin-event-list', eventData, deleteEventItem));
+        window.deleteEventItem = (i) => deleteItem(i, eventData, EVENT_Key, () => renderList('admin-event-list', eventData, deleteEventItem));
+
+        // Generic Add
+        function addItem(prefix, dataArray, storageKey, renderCb) {
+            const dateInput = document.getElementById(`${prefix}-date`);
+            const contentInput = document.getElementById(`${prefix}-content`);
+            const date = dateInput.value.replace(/-/g, '.');
             const content = contentInput.value.trim();
 
-            if (!date || !content) {
-                alert('日付と内容を入力してください');
-                return;
-            }
+            if (!content) return alert('内容を入力してください');
 
-            // 日付をYYYY.MM.DD形式に変換
-            const formattedDate = date.replace(/-/g, '.');
+            dataArray.unshift({ date, content });
+            localStorage.setItem(storageKey, JSON.stringify(dataArray));
+            renderCb();
 
-            // 新しいお知らせを配列の先頭に追加
-            newsData.unshift({
-                date: formattedDate,
-                content: content
-            });
-
-            // ローカルストレージに保存
-            saveToLocalStorage();
-
-            // 表示を更新
-            renderNewsList();
-
-            // フォームをクリア
             contentInput.value = '';
-
-            // 今日の日付を再設定
-            const today = new Date().toISOString().split('T')[0];
-            dateInput.value = today;
-
-            alert('お知らせを追加しました！\n変更は自動的に保存されています。');
+            alert('追加しました！');
         }
 
-        // お知らせを削除
-        function deleteNewsItem(index) {
-            if (!confirm('このお知らせを削除しますか?')) {
-                return;
-            }
-
-            newsData.splice(index, 1);
-
-            // ローカルストレージに保存
-            saveToLocalStorage();
-
-            renderNewsList();
-
-            alert('お知らせを削除しました！\n変更は自動的に保存されています。');
+        // Generic Delete
+        function deleteItem(index, dataArray, storageKey, renderCb) {
+            if (!confirm('削除しますか？')) return;
+            dataArray.splice(index, 1);
+            localStorage.setItem(storageKey, JSON.stringify(dataArray));
+            renderCb();
         }
 
-        // news.jsonをダウンロード（バックアップ用）
-        function downloadNewsJSON() {
-            const jsonStr = JSON.stringify(newsData, null, 2);
-            const blob = new Blob([jsonStr], { type: 'application/json' });
+        // Generic Download
+        window.downloadJSON = (data, filename) => {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'news.json';
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            alert('news.jsonをダウンロードしました。\nバックアップとして保存できます。');
-        }
-
-        // ローカルストレージをリセット（デバッグ用）
-        function resetLocalStorage() {
-            if (confirm('ローカルストレージをリセットして、news.jsonから再読み込みしますか？')) {
-                localStorage.removeItem(STORAGE_KEY);
-                location.reload();
-            }
-        }
+        };
     </script>
 </body>
 

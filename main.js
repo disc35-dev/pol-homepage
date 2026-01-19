@@ -3,9 +3,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
+            const targetId = this.getAttribute('href');
+            document.querySelector(targetId).scrollIntoView({
                 behavior: 'smooth'
             });
+
+            // Re-trigger hero animations when clicking Home
+            if (targetId === '#hero') {
+                const animatedElements = document.querySelectorAll('#hero .fade-in-up');
+                animatedElements.forEach(el => {
+                    el.style.animation = 'none';
+                    el.offsetHeight; /* Trigger reflow */
+                    el.style.animation = '';
+                });
+            }
         });
     });
 

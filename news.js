@@ -1,64 +1,89 @@
 // お知らせを動的に読み込んで表示するスクリプト
-const STORAGE_KEY = 'pol_news_data';
+const NEWS_STORAGE_KEY = 'pol_news_data';
+const EVENT_STORAGE_KEY = 'pol_event_data';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const newsListElement = document.querySelector('.news-list');
+    // 1. 更新履歴(News)の読み込み
+    await loadAndRenderNews(
+        '.news-list',
+        NEWS_STORAGE_KEY,
+        'news.json',
+        '更新履歴'
+    );
 
-    if (!newsListElement) {
-        console.warn('お知らせリストの要素が見つかりません');
-        return;
-    }
+    // 2. イベント情報の読み込み
+    await loadAndRenderNews(
+        '.event-news-list',
+        EVENT_STORAGE_KEY,
+        'event_news.json',
+        'イベント情報'
+    );
+});
+
+// 汎用的なニュース読み込み・表示関数
+async function loadAndRenderNews(selector, storageKey, jsonFile, label) {
+    const listElement = document.querySelector(selector);
+    if (!listElement) return;
 
     try {
-        let newsData = [];
-        
-        // まずローカルストレージをチェック(管理者のプレビュー用)
-        const storedData = localStorage.getItem(STORAGE_KEY);
+        let data = [];
+        const storedData = localStorage.getItem(storageKey);
 
         if (storedData) {
-            newsData = JSON.parse(storedData);
-            console.log('ローカルストレージからお知らせを読み込みました(プレビューモード)');
+            data = JSON.parse(storedData);
         } else {
-            // ローカルストレージになければnews.jsonから読み込み(通常ユーザー)
-            const response = await fetch('news.json');
-            if (!response.ok) {
-                throw new Error('お知らせデータの読み込みに失敗しました');
+            const response = await fetch(jsonFile);
+            if (response.ok) {
+                data = await response.json();
             }
-            newsData = await response.json();
-            console.log('news.jsonからお知らせを読み込みました');
         }
 
-        // お知らせリストをクリア
-        newsListElement.innerHTML = '';
+        listElement.innerHTML = '';
+        if (data.length === 0) {
+            listElement.innerHTML = `
+                <dl class="news-item">
+                    <dt>-</dt>
+                    <dd>現在${label}はありません。</dd>
+                </dl>`;
+            return;
+        }
 
-        // 各お知らせをHTMLに変換して追加
-        newsData.forEach(news => {
-            const newsItem = document.createElement('dl');
-            newsItem.className = 'news-item';
+        data.forEach(item => {
+            const row = document.createElement('dl');
 
-            const dt = document.createElement('dt');
-            dt.textContent = news.date;
+            // イベント情報の場合は特別なクラスを追加し、日付を表示しない
+            if (label === 'イベント情報') {
+                row.className = 'news-item event-item';
+                // 日付要素は作成しない、または非表示にする
+                // ここでは内容のみを表示する簡単な構造にする
+                const dd = document.createElement('dd');
+                dd.textContent = item.content;
+                row.appendChild(dd);
+            } else {
+                // 通常のお知らせ
+                row.className = 'news-item';
 
-            const dd = document.createElement('dd');
-            dd.textContent = news.content;
+                const dt = document.createElement('dt');
+                dt.textContent = item.date;
 
-            newsItem.appendChild(dt);
-            newsItem.appendChild(dd);
-            newsListElement.appendChild(newsItem);
+                const dd = document.createElement('dd');
+                dd.textContent = item.content;
+
+                row.appendChild(dt);
+                row.appendChild(dd);
+            }
+
+            listElement.appendChild(row);
         });
-
-        console.log(`${newsData.length}件のお知らせを読み込みました`);
-    } catch (error) {
-        console.error('お知らせの読み込みエラー:', error);
-        // エラー時はデフォルトメッセージを表示
-        newsListElement.innerHTML = `
+    } catch (e) {
+        console.error(`${label}の読み込みエラー:`, e);
+        listElement.innerHTML = `
             <dl class="news-item">
                 <dt>-</dt>
-                <dd>お知らせの読み込みに失敗しました。</dd>
-            </dl>
-        `;
+                <dd>読み込みに失敗しました。</dd>
+            </dl>`;
     }
-});
+}
 
 // お知らせを追加するヘルパー関数(管理者用: news.json作成サポート)
 window.addNews = async function (content) {
