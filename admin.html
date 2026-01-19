@@ -242,8 +242,8 @@
 
             // データ読み込み
             await Promise.all([
-                loadData(NEWS_Key, 'news.json', d => { newsData = d; renderList('admin-news-list', newsData, deleteNewsItem); }),
-                loadData(EVENT_Key, 'event_news.json', d => { eventData = d; renderList('admin-event-list', eventData, deleteEventItem); })
+                loadData(NEWS_Key, 'news.json', d => { newsData = d; renderList('admin-news-list', newsData, 'deleteNewsItem'); }),
+                loadData(EVENT_Key, 'event_news.json', d => { eventData = d; renderList('admin-event-list', eventData, 'deleteEventItem'); })
             ]);
         });
 
@@ -268,7 +268,7 @@
             }
         }
 
-        function renderList(elementId, data, deleteFunc) {
+        function renderList(elementId, data, deleteFuncName) {
             const el = document.getElementById(elementId);
             if (data.length === 0) {
                 el.innerHTML = '<p style="text-align: center; color: #999;">データがありません</p>';
@@ -280,18 +280,18 @@
                         <span class="admin-news-date">${item.date}</span>
                         <span class="admin-news-content">${item.content}</span>
                     </div>
-                    <button class="btn-delete" onclick="${deleteFunc.name}(${i})">削除</button>
+                    <button class="btn-delete" onclick="${deleteFuncName}(${i})">削除</button>
                 </div>
             `).join('');
         }
 
         // --- News Functions ---
-        window.addNewsItem = () => addItem('news', newsData, NEWS_Key, () => renderList('admin-news-list', newsData, deleteNewsItem));
-        window.deleteNewsItem = (i) => deleteItem(i, newsData, NEWS_Key, () => renderList('admin-news-list', newsData, deleteNewsItem));
+        window.addNewsItem = () => addItem('news', newsData, NEWS_Key, () => renderList('admin-news-list', newsData, 'deleteNewsItem'));
+        window.deleteNewsItem = (i) => deleteItem(i, newsData, NEWS_Key, () => renderList('admin-news-list', newsData, 'deleteNewsItem'));
 
         // --- Event Functions ---
-        window.addEventItem = () => addItem('event', eventData, EVENT_Key, () => renderList('admin-event-list', eventData, deleteEventItem));
-        window.deleteEventItem = (i) => deleteItem(i, eventData, EVENT_Key, () => renderList('admin-event-list', eventData, deleteEventItem));
+        window.addEventItem = () => addItem('event', eventData, EVENT_Key, () => renderList('admin-event-list', eventData, 'deleteEventItem'));
+        window.deleteEventItem = (i) => deleteItem(i, eventData, EVENT_Key, () => renderList('admin-event-list', eventData, 'deleteEventItem'));
 
         // Generic Add
         function addItem(prefix, dataArray, storageKey, renderCb) {

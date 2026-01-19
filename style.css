@@ -760,29 +760,38 @@ h4 {
 /* Event News Styling */
 .event-item {
     display: block;
-    /* Stack content differently than flex news-item */
-    padding: 20px;
-    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-    border: 2px solid #ffcc80;
-    border-radius: 12px;
+    padding: 30px;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('images/whole_cake.png');
+    background-size: cover;
+    background-position: center;
+    border: none;
+    /* Removed border */
+    border-radius: 8px;
     margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(255, 167, 38, 0.2);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
     text-align: center;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
+/* Removed the left colored border/tag */
+
 .event-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(255, 167, 38, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 .event-item dd {
     margin: 0;
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #e65100;
-    line-height: 1.5;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #4A3B32;
+    /* Darker brown for readability against image */
+    line-height: 1.6;
     font-family: 'Kiwi Maru', serif;
+    letter-spacing: 0.05em;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
 /* Responsive adjustments */
