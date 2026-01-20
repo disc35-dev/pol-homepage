@@ -569,15 +569,24 @@ h4 {
     }
 
     .hero-intro {
-        font-size: 0.85rem;
-        /* Further reduced to fit long text */
+        font-size: 1.1rem;
+        /* Increased for better readability */
         letter-spacing: 0.02em;
-        /* Tighter spacing */
-        line-height: 1.5;
+        line-height: 1.6;
+        /* Allow text to wrap to 2 lines */
         word-break: keep-all;
-        /* Better word breaking for Japanese */
-        padding: 0 10px;
-        /* Add horizontal padding */
+        padding: 0 15px;
+        /* Better horizontal padding */
+        max-width: 100%;
+        display: block;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+        padding: 0 20px;
+        /* Prevent left/right clipping */
+        max-width: 100%;
+        line-height: 1.7;
     }
 
     .header-container {
