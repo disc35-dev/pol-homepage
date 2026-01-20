@@ -569,24 +569,27 @@ h4 {
     }
 
     .hero-intro {
-        font-size: 1.1rem;
-        /* Increased for better readability */
+        font-size: 1.3rem !important;
+        /* Significantly increased for iPhone visibility */
         letter-spacing: 0.02em;
-        line-height: 1.6;
-        /* Allow text to wrap to 2 lines */
+        line-height: 1.7;
+        /* Better line spacing for wrapped text */
         word-break: keep-all;
-        padding: 0 15px;
-        /* Better horizontal padding */
+        padding: 0 25px !important;
+        /* Increased padding to prevent clipping */
         max-width: 100%;
         display: block;
+        margin-bottom: 15px;
     }
 
     .hero-subtitle {
-        font-size: 1rem;
-        padding: 0 20px;
-        /* Prevent left/right clipping */
+        font-size: 1.05rem !important;
+        /* Slightly increased */
+        padding: 0 25px !important;
+        /* Increased padding to prevent clipping */
         max-width: 100%;
-        line-height: 1.7;
+        line-height: 1.8;
+        margin-bottom: 25px;
     }
 
     .header-container {
