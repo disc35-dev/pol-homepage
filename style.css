@@ -628,6 +628,36 @@ h4 {
     }
 }
 
+/* iPhone and Small Mobile Devices */
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.8rem !important;
+    }
+
+    .hero-intro {
+        font-size: 1rem !important;
+        /* Smaller font for narrow screens */
+        padding: 0 20px !important;
+        line-height: 1.6;
+        word-break: normal;
+        /* Allow breaking if needed */
+        overflow-wrap: break-word;
+        margin-bottom: 12px;
+    }
+
+    .hero-subtitle {
+        font-size: 0.9rem !important;
+        padding: 0 20px !important;
+        line-height: 1.7;
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        font-size: 0.95rem;
+        padding: 10px 30px;
+    }
+}
+
 /* Reservation Form Styles */
 .reservation-section {
     min-height: calc(100vh - 200px);
