@@ -557,16 +557,27 @@ h4 {
 
 /* Responsive */
 @media (max-width: 768px) {
+    .logo-text {
+        font-size: 1.2rem;
+        /* Reduced from 1.6rem to prevent wrapping */
+        white-space: nowrap;
+        /* Prevent text wrapping */
+    }
+
     .hero-title {
         font-size: 2.2rem;
     }
 
     .hero-intro {
-        font-size: 1.0rem;
-        /* Reduced from 1.8rem base/implicit mobile size */
+        font-size: 0.85rem;
+        /* Further reduced to fit long text */
         letter-spacing: 0.02em;
         /* Tighter spacing */
-        line-height: 1.4;
+        line-height: 1.5;
+        word-break: keep-all;
+        /* Better word breaking for Japanese */
+        padding: 0 10px;
+        /* Add horizontal padding */
     }
 
     .header-container {
