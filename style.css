@@ -106,8 +106,14 @@ h4 {
 }
 
 .logo {
+    /* display: flex;  Removed as h1 now contains 'a' back that needs flex */
+}
+
+.logo a {
     display: flex;
     align-items: center;
+    color: inherit;
+    text-decoration: none;
 }
 
 .logo img {
@@ -553,6 +559,14 @@ h4 {
 @media (max-width: 768px) {
     .hero-title {
         font-size: 2.2rem;
+    }
+
+    .hero-intro {
+        font-size: 1.0rem;
+        /* Reduced from 1.8rem base/implicit mobile size */
+        letter-spacing: 0.02em;
+        /* Tighter spacing */
+        line-height: 1.4;
     }
 
     .header-container {
