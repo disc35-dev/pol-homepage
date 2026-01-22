@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else if (invalidInput.name === 'product') {
                     fieldName = '商品';
                 }
-                
+
                 alert(`「${fieldName}」を確認してください。\n必須項目か、入力内容が正しくありません。`);
             }
         }
@@ -148,67 +148,55 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // LINE通知を送信する関数
+    // LINE Notify (GASプロキシ) 経由で通知を送信する関数
     async function sendLineNotification(data) {
-        // LINE Notify APIのアクセストークン
-        const LINE_NOTIFY_TOKEN = 'YOUR_LINE_NOTIFY_TOKEN_HERE';
+        // LINE Messaging API への通知を中継する GAS の URL
+        const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwZDuTaGVVWnJmaDrEGDq19BM4Xon8sEX1qgUwh9egN-54hEGtXeht-1Zc5gjDhCa0g/exec';
 
         // 商品リストのテキスト作成
         const productsText = data.products.map(p =>
-            `  ・${p.name}: ${p.quantity}個 (¥${(p.price * p.quantity).toLocaleString()})`
+            `・${p.name}: ${p.quantity}個 (¥${(p.price * p.quantity).toLocaleString()})`
         ).join('\n');
 
-        // 通知メッセージを作成
+        // メッセージを作成
         const message = `
 【お取り置き予約】
-
 お名前: ${data.name}
 電話番号: ${data.phone}
 ${data.email ? `メール: ${data.email}` : ''}
 
 ■ご注文内容
 ${productsText}
-
 合計金額: ¥${data.totalPrice.toLocaleString()}
 
 受取日時: ${data.pickupDate} ${data.pickupTime}
 ${data.notes ? `備考: ${data.notes}` : ''}
+`.trim();
 
-※ お客様へのご連絡をお願いします
-        `.trim();
+        console.log('Sending message verbatim to GAS:', message);
 
-        // デモモード: 実際のLINE APIを呼び出さずにシミュレート
-        if (LINE_NOTIFY_TOKEN === 'YOUR_LINE_NOTIFY_TOKEN_HERE') {
-            console.log('=== デモモード ===');
-            console.log('LINE通知メッセージ:');
-            console.log(message);
-            console.log('================');
+        // 【重要】フロント側で正しくデータが取得できているか確認するためのアラートです。
+        // ここで正しい内容が表示されるのに通知が空の場合、GAS/LINE側の問題です。
+        alert("以下の内容で送信を試みます：\n\n" + message);
 
-            // デモ用の遅延
-            await new Promise(resolve => setTimeout(resolve, 1000));
+        try {
+            // GASへデータを送信
+            // JSONパースのエラーを避けるため、メッセージ本文（テキスト）をそのまま送信します。
+            const response = await fetch(GAS_WEBAPP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8'
+                },
+                body: message // テキストをそのまま送る
+            });
 
-            alert('【デモモード】\n\nLINE通知が送信されました（シミュレーション）\n\n実際の通知内容:\n' + message);
-            return;
+            console.log('Verbatim message sent to GAS.');
+            return Promise.resolve();
+        } catch (fetchError) {
+            console.error('Fetch operation failed:', fetchError);
+            throw new Error('ネットワーク送信に失敗しました: ' + fetchError.message);
         }
-
-        // 実際のLINE Notify API呼び出し
-        const response = await fetch('https://notify-api.line.me/api/notify', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${LINE_NOTIFY_TOKEN}`,
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-                message: message
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`LINE通知の送信に失敗しました (${response.status})`);
-        }
-
-        const result = await response.json();
-        console.log('LINE通知送信成功:', result);
     }
 
     // 電話番号の自動フォーマット

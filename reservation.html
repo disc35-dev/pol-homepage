@@ -156,11 +156,11 @@
                         <div class="form-notice">
                             <p>※ お取り置き期間は受取希望日当日までとなります。</p>
                             <p>※ 営業時間: 10:00 - 19:00 (水曜定休)</p>
-                            <p>※ ご予約確認後、LINEにて通知いたします。</p>
+                            <p>※ 「予約を確定する」ボタンを押すと、店舗へ通知が送信されます。</p>
                         </div>
 
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-primary btn-submit">予約する</button>
+                            <button type="submit" class="btn btn-primary btn-submit">予約を確定する</button>
                         </div>
                     </form>
 
@@ -168,9 +168,13 @@
                         <div class="success-icon">✓</div>
                         <h4>お取り置きを承りました</h4>
                         <p>ご予約ありがとうございます。<br>
-                            LINEにて確認通知をお送りいたしました。<br>
-                            ご来店をお待ちしております。</p>
-                        <button class="btn btn-secondary" onclick="location.reload()">新しい予約をする</button>
+                            店舗にて内容を確認させていただきます。<br>
+                            ご来店を心よりお待ちしております。</p>
+                        <div style="margin: 20px 0;">
+                            <button class="btn btn-secondary" onclick="location.reload()">続けて予約をする</button>
+                            <a href="index.html" class="btn btn-primary"
+                                style="margin-top: 10px; display: block;">トップページへ戻る</a>
+                        </div>
                     </div>
                 </div>
             </div>
