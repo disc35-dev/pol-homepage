@@ -69,18 +69,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // 合計金額を計算する関数
     function calculateTotal() {
         let total = 0;
+        const summaryContainer = document.getElementById('selected-products-summary');
+        let summaryHtml = '<div class="summary-title">選択中の商品:</div><ul>';
+        let hasSelected = false;
 
         productCheckboxes.forEach(checkbox => {
             if (checkbox.checked) {
+                const label = document.querySelector(`label[for="${checkbox.id}"]`).textContent.split('(')[0].trim();
                 const price = parseInt(checkbox.getAttribute('data-price'));
                 const quantityInput = document.getElementById(checkbox.id.replace('prod-', 'qty-'));
                 const quantity = parseInt(quantityInput.value) || 0;
 
                 total += price * quantity;
+                summaryHtml += `<li>${label}: ${quantity}個 (¥${price.toLocaleString()})</li>`;
+                hasSelected = true;
             }
         });
 
+        summaryHtml += '</ul>';
         totalPriceSpan.textContent = total.toLocaleString();
+
+        if (hasSelected) {
+            summaryContainer.innerHTML = summaryHtml;
+            summaryContainer.style.display = 'block';
+        } else {
+            summaryContainer.style.display = 'none';
+        }
     }
 
     // フォーム送信処理

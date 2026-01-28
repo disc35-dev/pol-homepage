@@ -105,9 +105,6 @@ h4 {
     transform: translateY(-9px) rotate(-45deg);
 }
 
-.logo {
-    /* display: flex;  Removed as h1 now contains 'a' back that needs flex */
-}
 
 .logo a {
     display: flex;
@@ -702,12 +699,78 @@ h4 {
 }
 
 .reservation-form-container {
-    max-width: 700px;
+    max-width: 800px;
     margin: 0 auto;
     background: var(--color-white);
     padding: 40px;
     border-radius: 15px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.product-selection-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.product-category {
+    flex: 1;
+    min-width: 300px;
+}
+
+.product-category-title {
+    font-size: 1.1rem;
+    color: var(--color-primary);
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid var(--color-secondary);
+    display: inline-block;
+}
+
+.product-checkbox-item {
+    margin-bottom: 15px;
+}
+
+.selected-products-summary {
+    margin-top: 25px;
+    padding: 15px;
+    background-color: #f9f6f1;
+    border-radius: 8px;
+    border: 1px dashed var(--color-primary);
+}
+
+.summary-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+}
+
+.selected-products-summary ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.selected-products-summary li {
+    font-size: 0.95rem;
+    color: var(--color-text);
+    padding: 4px 0;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(142, 110, 83, 0.1);
+}
+
+.selected-products-summary li:last-child {
+    border-bottom: none;
+}
+
+.total-price-area {
+    margin-top: 15px;
+    text-align: right;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-primary);
 }
 
 .reservation-form {
